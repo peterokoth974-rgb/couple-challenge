@@ -1,0 +1,502 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Couples Challenge ❤️</title>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 20px;
+  min-height: 100vh;
+  font-family: Arial, sans-serif;
+  color: white;
+  background: linear-gradient(135deg, #240b24, #711c48, #301047);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.app {
+  width: 100%;
+  max-width: 520px;
+  text-align: center;
+}
+
+h1 {
+  font-size: 36px;
+  color: #ff8db8;
+}
+
+.subtitle {
+  color: #f4dbe8;
+  line-height: 1.5;
+}
+
+.panel {
+  background: rgba(255,255,255,0.09);
+  padding: 24px;
+  border: 1px solid #a84d7d;
+  border-radius: 22px;
+  box-shadow: 0 10px 35px #0005;
+}
+
+button, input, select {
+  width: 100%;
+  padding: 13px;
+  margin: 7px 0;
+  border-radius: 12px;
+  font-size: 16px;
+}
+
+button {
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  background: #ff72a5;
+  color: #310b23;
+}
+
+button:hover {
+  filter: brightness(1.1);
+}
+
+button.secondary {
+  color: white;
+  background: #542747;
+  border: 1px solid #a84d7d;
+}
+
+input, select {
+  background: #2a1530;
+  color: white;
+  border: 1px solid #a84d7d;
+}
+
+.challenge-card {
+  margin: 20px 0;
+  padding: 25px 18px;
+  background: linear-gradient(145deg, #7a2452, #3c2058);
+  border-radius: 18px;
+  min-height: 190px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.category {
+  color: #ffd479;
+  text-transform: uppercase;
+  font-size: 13px;
+  letter-spacing: 2px;
+  font-weight: bold;
+}
+
+#question {
+  font-size: 23px;
+  line-height: 1.4;
+}
+
+.scores {
+  display: flex;
+  gap: 12px;
+}
+
+.score {
+  flex: 1;
+  padding: 12px;
+  background: #351a3d;
+  border-radius: 12px;
+}
+
+.score strong {
+  display: block;
+  margin-bottom: 8px;
+}
+
+.score span {
+  font-size: 25px;
+  color: #ff8db8;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.notice {
+  color: #e9ccdf;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+@media (max-width: 380px) {
+  h1 { font-size: 29px; }
+  .panel { padding: 16px; }
+}
+</style>
+</head>
+
+<body>
+<div class="app">
+
+  <section id="home">
+    <h1>💘 Couples Challenge</h1>
+    <p class="subtitle">
+      How well do you know each other?
+      Play, laugh, flirt and compete!
+    </p>
+
+    <div class="panel">
+      <h3>Choose your players</h3>
+
+      <input id="player1" value="Player 1"
+             placeholder="First player's name">
+
+      <input id="player2" value="Player 2"
+             placeholder="Second player's name">
+
+      <h3>Choose your challenge</h3>
+
+      <select id="category">
+        <option value="all">🎲 All Challenges</option>
+        <option value="romantic">❤️ Romantic</option>
+        <option value="funny">😂 Funny</option>
+        <option value="competitive">🏆 Competitive</option>
+        <option value="flirty">🔥 Flirty (18+)</option>
+      </select>
+
+      <h3>Choose play mode</h3>
+
+      <select id="mode">
+        <option value="together">📱 Together on one phone</option>
+        <option value="online">🌐 Online multiplayer (coming next)</option>
+      </select>
+
+      <button id="startButton">START CHALLENGE ❤️</button>
+
+      <p class="notice">
+        Either player may skip a challenge. Respect each other's
+        boundaries and only do what both players are comfortable with.
+      </p>
+    </div>
+  </section>
+
+  <section id="game" class="hidden">
+    <h1>💞 Let the game begin!</h1>
+    <p id="round">Round 1</p>
+
+    <div class="scores">
+      <div class="score">
+        <strong id="name1">Player 1</strong>
+        <span id="score1">0</span>
+        <div>Points</div>
+      </div>
+
+      <div class="score">
+        <strong id="name2">Player 2</strong>
+        <span id="score2">0</span>
+        <div>Points</div>
+      </div>
+    </div>
+
+    <div class="panel" style="margin-top:16px">
+      <p id="turn">Player 1's turn</p>
+
+      <div class="challenge-card">
+        <div class="category" id="label">ROMANTIC</div>
+        <h2 id="question">Your challenge appears here.</h2>
+        <p id="points">Earn 10 points!</p>
+      </div>
+
+      <button id="completeButton">Challenge Completed +10</button>
+      <button class="secondary" id="skipButton">Skip Challenge ↪</button>
+      <button class="secondary hidden" id="nextButton">
+        Next Challenge →
+      </button>
+    </div>
+  </section>
+
+  <section id="results" class="hidden">
+    <h1>🏆 Game Over!</h1>
+    <div class="panel">
+      <h2 id="winner"></h2>
+      <p id="finalScores"></p>
+      <button id="playAgainButton">PLAY AGAIN ❤️</button>
+      <button class="secondary" id="shareButton">SHARE GAME</button>
+    </div>
+  </section>
+
+</div>
+
+<script>
+const challenges = [
+  {
+    category: "romantic",
+    question: "Name one thing your partner does that makes you feel loved.",
+    points: 10
+  },
+  {
+    category: "romantic",
+    question: "Describe your dream date together.",
+    points: 10
+  },
+  {
+    category: "romantic",
+    question: "Share your favourite memory as a couple.",
+    points: 10
+  },
+  {
+    category: "romantic",
+    question: "Give your partner a sincere compliment.",
+    points: 10
+  },
+  {
+    category: "funny",
+    question: "Imitate your partner ordering their favourite food.",
+    points: 10
+  },
+  {
+    category: "funny",
+    question: "Invent a ridiculous nickname for your partner.",
+    points: 10
+  },
+  {
+    category: "funny",
+    question: "Do your funniest romantic movie scene.",
+    points: 15
+  },
+  {
+    category: "funny",
+    question: "Create a funny two-step dance together.",
+    points: 15
+  },
+  {
+    category: "competitive",
+    question: "Guess your partner's favourite meal.",
+    points: 15
+  },
+  {
+    category: "competitive",
+    question: "Name three things you both enjoy doing.",
+    points: 15
+  },
+  {
+    category: "competitive",
+    question: "What was one detail from your first conversation?",
+    points: 15
+  },
+  {
+    category: "competitive",
+    question: "Guess your partner's dream holiday destination.",
+    points: 15
+  },
+  {
+    category: "flirty",
+    question: "Give your partner your most charming smile for five seconds.",
+    points: 10
+  },
+  {
+    category: "flirty",
+    question: "Describe an outfit your partner looks great in.",
+    points: 10
+  },
+  {
+    category: "flirty",
+    question: "Say something sweet that might make your partner blush.",
+    points: 10
+  },
+  {
+    category: "flirty",
+    question: "Ask your partner which affectionate gesture they enjoy most.",
+    points: 10
+  }
+];
+
+const categoryNames = {
+  romantic: "❤️ Romantic",
+  funny: "😂 Funny",
+  competitive: "🏆 Competitive",
+  flirty: "🔥 Flirty"
+};
+
+let players = ["Player 1", "Player 2"];
+let scores = [0, 0];
+let turn = 0;
+let round = 0;
+let deck = [];
+let currentChallenge = null;
+let completed = false;
+
+const $ = id => document.getElementById(id);
+
+function shuffle(array) {
+  const result = [...array];
+
+  for (let i = result.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [result[i], result[j]] = [result[j], result[i]];
+  }
+
+  return result;
+}
+
+function startGame() {
+  if ($("mode").value === "online") {
+    alert(
+      "Online multiplayer is not connected yet. " +
+      "Choose Together mode for now. We will add online rooms next."
+    );
+    return;
+  }
+
+  players = [
+    $("player1").value.trim() || "Player 1",
+    $("player2").value.trim() || "Player 2"
+  ];
+
+  const selected = $("category").value;
+
+  deck = shuffle(
+    challenges.filter(c =>
+      selected === "all" || c.category === selected
+    )
+  );
+
+  scores = [0, 0];
+  turn = 0;
+  round = 0;
+
+  $("name1").textContent = players[0];
+  $("name2").textContent = players[1];
+
+  $("home").classList.add("hidden");
+  $("results").classList.add("hidden");
+  $("game").classList.remove("hidden");
+
+  showChallenge();
+}
+
+function showChallenge() {
+  if (round >= deck.length) {
+    showResults();
+    return;
+  }
+
+  currentChallenge = deck[round];
+  completed = false;
+
+  $("round").textContent =
+    `Round ${round + 1} of ${deck.length}`;
+
+  $("turn").textContent = `${players[turn]}'s turn`;
+
+  $("label").textContent =
+    categoryNames[currentChallenge.category];
+
+  $("question").textContent = currentChallenge.question;
+
+  $("points").textContent =
+    `Complete this challenge to earn ${currentChallenge.points} points`;
+
+  $("score1").textContent = scores[0];
+  $("score2").textContent = scores[1];
+
+  $("completeButton").disabled = false;
+  $("completeButton").textContent =
+    `Challenge Completed +${currentChallenge.points}`;
+
+  $("completeButton").classList.remove("hidden");
+  $("skipButton").classList.remove("hidden");
+  $("nextButton").classList.add("hidden");
+}
+
+function completeChallenge() {
+  if (completed) return;
+
+  scores[turn] += currentChallenge.points;
+  completed = true;
+
+  $("score1").textContent = scores[0];
+  $("score2").textContent = scores[1];
+
+  $("turn").textContent =
+    `Well done, ${players[turn]}!`;
+
+  $("completeButton").disabled = true;
+  $("completeButton").textContent = "Points Awarded ✓";
+
+  $("nextButton").classList.remove("hidden");
+}
+
+function nextChallenge() {
+  round++;
+  turn = 1 - turn;
+  showChallenge();
+}
+
+function skipChallenge() {
+  round++;
+  turn = 1 - turn;
+  showChallenge();
+}
+
+function showResults() {
+  $("game").classList.add("hidden");
+  $("results").classList.remove("hidden");
+
+  if (scores[0] === scores[1]) {
+    $("winner").textContent = "It's a tie! 💞";
+  } else {
+    const winnerIndex = scores[0] > scores[1] ? 0 : 1;
+    $("winner").textContent =
+      `${players[winnerIndex]} wins! 🏆`;
+  }
+
+  $("finalScores").textContent =
+    `${players[0]}: ${scores[0]} points | ` +
+    `${players[1]}: ${scores[1]} points`;
+}
+
+$("startButton").addEventListener("click", startGame);
+
+$("completeButton").addEventListener(
+  "click", completeChallenge
+);
+
+$("nextButton").addEventListener("click", nextChallenge);
+$("skipButton").addEventListener("click", skipChallenge);
+
+$("playAgainButton").addEventListener("click", () => {
+  $("results").classList.add("hidden");
+  $("home").classList.remove("hidden");
+});
+
+$("shareButton").addEventListener("click", async () => {
+  const data = {
+    title: "Couples Challenge ❤️",
+    text: "Let's play Couples Challenge!",
+    url: window.location.href
+  };
+
+  try {
+    if (navigator.share) {
+      await navigator.share(data);
+    } else {
+      await navigator.clipboard.writeText(
+        data.text + " " + data.url
+      );
+      alert("Game link copied!");
+    }
+  } catch (error) {
+    // The player may cancel the share window.
+  }
+});
+</script>
+</body>
+</html>
